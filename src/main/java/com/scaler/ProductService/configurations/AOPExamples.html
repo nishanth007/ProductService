@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding AOP in Spring Boot - Detailed Explanation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+        }
+        p {
+            margin-bottom: 10px;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 5px;
+            font-family: Courier, monospace;
+            border-radius: 3px;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .example {
+            background-color: #e0f7fa;
+            padding: 10px;
+            border-left: 5px solid #00838f;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Understanding AOP in Spring Boot - Detailed Explanation</h1>
+
+<h2>1. Understanding <code>joinPoint.proceed()</code> in AOP</h2>
+<p>
+    When we use <code>joinPoint.proceed()</code> in an <code>@Around</code> advice, we are invoking the actual method that the AOP is wrapping.
+    The <code>proceed()</code> method will execute the original method, and once it finishes, it will return the result of that method.
+</p>
+
+<h3>Step-by-Step Flow in AOP with <code>joinPoint.proceed()</code></h3>
+<p>Here's how it works in terms of the actual flow when you are using AOP:</p>
+<ul>
+    <li><strong>Intercepting the Method Call:</strong> AOP intercepts the method call and passes control to the around advice (the method where you defined <code>@Around</code>). The original method hasn't been executed yet.</li>
+    <li><strong>Calling <code>joinPoint.proceed()</code>:</strong> Inside the advice, we call <code>joinPoint.proceed()</code>. This actually calls the target method and executes it.
+        <ul><li>Important: The method will return its result to the advice after execution.</li></ul>
+    </li>
+    <li><strong>Manipulating or Returning the Result:</strong> After <code>joinPoint.proceed()</code> returns the result of the method, you can perform additional operations on that result before returning it to the caller.</li>
+    <li><strong>Returning the Result:</strong> Finally, the modified or original result is returned from the advice and handed back to the caller of the method.</li>
+</ul>
+
+<hr>
+
+<h2>2. Example: Flow with Result Handling</h2>
+<p>Let's walk through an example where we use <code>joinPoint.proceed()</code> to execute a method and store its result, and then modify or log that result before returning it.</p>
+
+<h3>Scenario: Modifying the Return Value</h3>
+
+<div class="example">
+<pre><code>
+@Aspect
+@Component
+public class ResultModifierAspect {
+
+    @Around("execution(* com.example.service.*.get*(..))")
+    public Object modifyResult(ProceedingJoinPoint joinPoint) throws Throwable {
+        // Before proceeding to the method, you can log, validate, or modify parameters
+        System.out.println("Method " + joinPoint.getSignature() + " is being called.");
+
+        // Proceeding to the actual method and storing the result
+        Object result = joinPoint.proceed();
+
+        // Now, we can modify or manipulate the result if needed
+        if (result instanceof String) {
+            result = ((String) result).toUpperCase();
+            System.out.println("Modified result: " + result);
+        }
+
+        // Return the modified result to the caller
+        return result;
+    }
+}
+</code></pre>
+</div>
+
+<h3>Explanation:</h3>
+<ul>
+    <li><strong>Before <code>joinPoint.proceed()</code>:</strong> The advice has control over the method execution and can inspect or modify input parameters, log details, etc.</li>
+    <li><strong>Calling <code>joinPoint.proceed()</code>:</strong> When <code>joinPoint.proceed()</code> is called, it triggers the actual method execution, and the method proceeds with its normal flow. Once the method finishes execution, it returns the result (e.g., a String).</li>
+    <li><strong>Modifying the Result:</strong> After <code>joinPoint.proceed()</code> returns the result, you can inspect and modify it as necessary (e.g., converting the result to uppercase).</li>
+    <li><strong>Returning the Modified Result:</strong> Finally, the modified result (or the original result) is returned to the caller.</li>
+</ul>
+
+<hr>
+
+<h2>3. What Happens if We Return Something Directly from the Aspect?</h2>
+<p>If you're modifying or manipulating the result inside the advice, you must return the result from the aspect after calling <code>joinPoint.proceed()</code>. If you decide to return something directly from the aspect (instead of proceeding with the target method), that will completely bypass the actual method and return the value you provide.</p>
+
+<h3>Example: Bypassing the Target Method</h3>
+
+<div class="example">
+<pre><code>
+@Around("execution(* com.example.service.*.get*(..))")
+public Object bypassMethod(ProceedingJoinPoint joinPoint) {
+    return "Custom Value";
+}
+</code></pre>
+</div>
+
+<p>In this case:</p>
+<ul>
+    <li>The original method will never get called, and instead, "Custom Value" will be returned.</li>
+</ul>
+
+<hr>
+
+<h2>4. Custom Logging for All Requests</h2>
+<p>This example shows how to implement custom logging for every method invocation in the application using AOP.</p>
+
+<div class="example">
+<pre><code>
+@Aspect
+@Component
+public class LoggingAspect {
+
+    @Around("execution(* com.example.service.*.*(..))")
+    public Object logMethodCall(ProceedingJoinPoint joinPoint) throws Throwable {
+        String methodName = joinPoint.getSignature().getName();
+        System.out.println("Method " + methodName + " is called.");
+
+        // Proceed to the actual method and capture the result
+        Object result = joinPoint.proceed();
+
+        // Log the result
+        System.out.println("Method " + methodName + " returned: " + result);
+
+        return result;
+    }
+}
+</code></pre>
+</div>
+
+<h3>Explanation:</h3>
+<p>This example demonstrates an <code>@Around</code> advice where every method in the <code>com.example.service</code> package is logged:</p>
+<ul>
+    <li><strong>Before method execution:</strong> We log the method name.</li>
+    <li><strong>After method execution:</strong> We log the result that was returned.</li>
+</ul>
+
+<hr>
+
+<h2>5. Custom Exception Handling with AOP</h2>
+<p>This example demonstrates how to use AOP to handle exceptions globally for certain methods.</p>
+
+<div class="example">
+<pre><code>
+@Aspect
+@Component
+public class ExceptionHandlingAspect {
+
+    @Around("execution(* com.example.service.*.*(..))")
+    public Object handleException(ProceedingJoinPoint joinPoint) throws Throwable {
+        try {
+            return joinPoint.proceed();
+        } catch (Exception ex) {
+            System.out.println("Exception occurred in method: " + joinPoint.getSignature().getName());
+            // Handle exception or log it as needed
+            return "Default Value";  // Return a fallback value
+        }
+    }
+}
+</code></pre>
+</div>
+
+<h3>Explanation:</h3>
+<ul>
+    <li><strong>Before and after method execution:</strong> This aspect intercepts methods and handles exceptions by returning a default value if an exception occurs.</li>
+</ul>
+
+<hr>
+
+<h2>6. Summary: How <code>joinPoint.proceed()</code> Affects the Flow</h2>
+<ul>
+    <li>Intercept method</li>
+    <li>Execute method with <code>joinPoint.proceed()</code></li>
+    <li>Get and optionally modify result</li>
+    <li>Return result back to caller</li>
+</ul>
+
+</body>
+</html>
