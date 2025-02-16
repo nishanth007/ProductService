@@ -26,7 +26,6 @@ public class FakeStoreProductService implements  ProductService {
 
         //Fake Product Service
         FakeStoreProductDTO fakeStoreProductDTO = (FakeStoreProductDTO) restTemplate.getForObject("https://fakestoreapi.com/products/" + productId , FakeStoreProductDTO.class);
-        fakeStoreProductDTO = null;
         assert fakeStoreProductDTO != null;
 
         return convertFakeStoreProductToRealProduct(fakeStoreProductDTO);
