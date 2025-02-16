@@ -7,6 +7,15 @@ import java.util.Date;
 
 public class BaseModel {
 
+    @Override
+    public String toString() {
+        return "BaseModel{" +
+                "id=" + id +
+                ", createdDate=" + createdDate +
+                ", lastUpdatedDate=" + lastUpdatedDate +
+                '}';
+    }
+
     public long getId() {
         return id;
     }

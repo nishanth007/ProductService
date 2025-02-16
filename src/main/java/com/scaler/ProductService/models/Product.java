@@ -9,6 +9,15 @@ public class Product extends BaseModel {
         return price;
     }
 
+    @Override
+    public String toString() {
+        return "Product{" +
+                "price=" + price +
+                ", title='" + title + '\'' +
+                ", category=" + category +
+                '}';
+    }
+
     public void setPrice(double price) {
         this.price = price;
     }

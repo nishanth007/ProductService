@@ -13,6 +13,14 @@ public class Category extends BaseModel {
         this.description = description;
     }
 
+    @Override
+    public String toString() {
+        return "Category{" +
+                "description='" + description + '\'' +
+                ", category='" + category + '\'' +
+                '}';
+    }
+
     public String getCategory() {
         return category;
     }

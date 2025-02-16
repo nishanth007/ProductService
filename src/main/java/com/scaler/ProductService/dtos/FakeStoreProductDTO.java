@@ -20,8 +20,21 @@ public class FakeStoreProductDTO {
         return description;
     }
 
+
+
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return "FakeStoreProductDTO{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", price=" + price +
+                ", category='" + category + '\'' +
+                ", description='" + description + '\'' +
+                '}';
     }
 
     public String getCategory() {
