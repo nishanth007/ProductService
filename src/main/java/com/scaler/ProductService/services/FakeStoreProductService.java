@@ -71,6 +71,11 @@ public class FakeStoreProductService implements ProductService {
     }
 
     @Override
+    public Product createProduct(Product product) {
+        return null;
+    }
+
+    @Override
     public void deleteProduct(Long productId) {
 
     }
@@ -85,7 +90,7 @@ public class FakeStoreProductService implements ProductService {
     }
 
     @Override
-    public Product replaceProduct(Long productId, Product product) {
+    public Product replaceProduct(Long productId, Product product)  {
         HttpMethod method = HttpMethod.PUT;
         return callRestTemplateByHttpMethod(productId, product, method);
 

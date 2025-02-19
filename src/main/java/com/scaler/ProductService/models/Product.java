@@ -1,12 +1,29 @@
 package com.scaler.ProductService.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PostLoad;
 
+import java.util.Objects;
 
+@Entity
 public class Product extends BaseModel {
 
-    public double getPrice() {
+    public Double getPrice() {
         return price;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Product product = (Product) o;
+        return Objects.equals(title, product.title) && Objects.equals(category, product.category);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, category);
     }
 
     @Override
@@ -18,7 +35,7 @@ public class Product extends BaseModel {
                 '}';
     }
 
-    public void setPrice(double price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
@@ -38,7 +55,10 @@ public class Product extends BaseModel {
         this.category = category;
     }
 
-    private double price;
+    private Double price;
     private String title;
+
+    @ManyToOne
     private Category category;
+
 }

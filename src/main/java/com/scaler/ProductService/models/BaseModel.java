@@ -1,10 +1,15 @@
 package com.scaler.ProductService.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 
 import java.util.Date;
 
 
+@MappedSuperclass
 public class BaseModel {
 
     @Override
@@ -16,11 +21,11 @@ public class BaseModel {
                 '}';
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -45,7 +50,9 @@ public class BaseModel {
         this.lastUpdatedDate = this.createdDate;
     }
 
-    private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private Date createdDate;
     private Date  lastUpdatedDate;
 }

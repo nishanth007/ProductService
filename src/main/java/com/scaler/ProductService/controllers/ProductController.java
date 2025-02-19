@@ -3,6 +3,7 @@ package com.scaler.ProductService.controllers;
 import com.scaler.ProductService.Exceptions.ProductNotFoundException;
 import com.scaler.ProductService.models.Product;
 import com.scaler.ProductService.services.ProductService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/products")
 public class ProductController {
-
+    // @Qualifier("SelfProductService"); or use @Primary on the SelfProductService
     private ProductService productService;
 
     public ProductController(ProductService productService) {
@@ -39,7 +40,7 @@ public class ProductController {
     }
 
 
-    private static <T> ResponseEntity<T> prepareSimpleResponseEntity(T product , HttpStatus status) {
+    private static <T> ResponseEntity<T> prepareSimpleResponseEntity(T product, HttpStatus status) {
         return new ResponseEntity<>(product, status);
 
     }
@@ -49,23 +50,31 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
-    public void deleteProduct(Long productId) {
-
-    }
-
     //PATCH call - Partial Update
     @PatchMapping("/{productId}")
-    public Product updateProduct(@PathVariable("productId") Long productId, @RequestBody Product product) {
+    public Product updateProduct(@PathVariable("productId") Long productId, @RequestBody Product product) throws ProductNotFoundException {
         return productService.updateProduct(productId, product);
     }
 
 
     //PUT call - replaces
     @PutMapping("/{productId}")
-    public Product replaceProduct(@PathVariable("productId") Long productId, @RequestBody Product product) {
+    public Product replaceProduct(@PathVariable("productId") Long productId, @RequestBody Product product) throws ProductNotFoundException {
         return productService.replaceProduct(productId, product);
     }
-   // Handler moved to Global exception handler
+
+    @PostMapping("/")
+    public Product replaceProduct(@RequestBody Product product) {
+        return productService.createProduct(product);
+    }
+
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<String> deleteProduct(@PathVariable("productId") Long productId) {
+        productService.deleteProduct(productId);
+        return ResponseEntity.ok("Item deleted successfully");
+    }
+
+    // Handler moved to Global exception handler
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleGlobalException(Exception ex, WebRequest request) {
         Map<String, Object> body = new HashMap<>();
