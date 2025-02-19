@@ -1,5 +1,6 @@
 package com.scaler.ProductService.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
@@ -45,7 +46,7 @@ public class Category extends BaseModel {
         this.category = category;
     }
 
-
+    //mysqldump -u root -p --no-data productdb > schema.sql
     private String description;
 
     @Column(unique = true)
@@ -64,8 +65,9 @@ public class Category extends BaseModel {
     // So use cascading here
     // By default collections are fetched in lazy mode
     // Use @Transactional while doing lazy fetch
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "category" , cascade = CascadeType.REMOVE)
-    List<Product> products;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "category", cascade = CascadeType.REMOVE)
+    @JsonIgnore // required to remove infinite loops
+            List<Product> products;
 //    @OneToMany and @ManyToOne by default use lazy loading.
 //    @ManyToMany and @OneToOne by default use eager loading.
 }

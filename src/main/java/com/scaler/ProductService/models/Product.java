@@ -59,9 +59,18 @@ public class Product extends BaseModel {
     private Double price;
     private String title;
 
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    private Integer quantity;
+
 
     @ManyToOne(cascade = CascadeType.PERSIST)
-    //@ManyToOne(CascadeType.REMOVE) would remove the product along with Id
     private Category category;
 
 }
