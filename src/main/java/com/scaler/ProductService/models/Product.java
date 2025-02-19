@@ -1,6 +1,7 @@
 package com.scaler.ProductService.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PostLoad;
@@ -58,7 +59,9 @@ public class Product extends BaseModel {
     private Double price;
     private String title;
 
-    @ManyToOne
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    //@ManyToOne(CascadeType.REMOVE) would remove the product along with Id
     private Category category;
 
 }

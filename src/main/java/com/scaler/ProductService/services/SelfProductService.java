@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Service
 @Primary
-public class SelfProductService implements  ProductService{
+public class SelfProductService implements ProductService {
 
     @Autowired
     ProductRepository productRepository;
@@ -27,7 +27,7 @@ public class SelfProductService implements  ProductService{
     public Product getSingleProduct(Long productId) throws ProductNotFoundException {
         Optional<Product> product = productRepository.findById(productId);
 
-        return product.orElseThrow(() ->  new ProductNotFoundException("Invalid product id"));
+        return product.orElseThrow(() -> new ProductNotFoundException("Invalid product id"));
     }
 
     @Override
@@ -37,15 +37,25 @@ public class SelfProductService implements  ProductService{
 
     @Override
     public Product createProduct(Product product) {
-        Category category = product.getCategory();
-        Optional<Category>  dbCat = categoryRepository.findByCategory(category.getCategory());
-        if(dbCat.isEmpty()) {
-            category = categoryRepository.save(category);
-            product.setCategory(category);
+
+//        Category category = product.getCategory();
+//        Optional<Category>  dbCat = categoryRepository.findByCategory(category.getCategory());
+//        if(dbCat.isEmpty()) {
+//            category = categoryRepository.save(category);
+//            product.setCategory(category);
+//        }
+//        else{
+//            product.setCategory(dbCat.get());
+//        }
+
+        /* with Cascade.persist we need not handle internal objects
+        {
+            "error": "Internal Server Error Overridden Global Advice",
+            "message": "org.hibernate.TransientObjectException: persistent
+             instance references an unsaved transient instance of 'com.scaler.ProductService.models.Category' (save the transient instance before flushing)",
+            "status": 500
         }
-        else{
-            product.setCategory(dbCat.get());
-        }
+        * */
 
         product = productRepository.save(product);
         return product;
@@ -58,31 +68,29 @@ public class SelfProductService implements  ProductService{
     }
 
     @Override
-    public Product replaceProduct(Long productId, Product product) throws ProductNotFoundException{
-        Optional<Product>  dbProduct = productRepository.findById(productId);
-        if(!dbProduct.isEmpty()) {
+    public Product replaceProduct(Long productId, Product product) throws ProductNotFoundException {
+        Optional<Product> dbProduct = productRepository.findById(productId);
+        if (!dbProduct.isEmpty()) {
             product.setId(productId);
             Category category = product.getCategory();
 
-            if(category == null || (category.getId() == null && category.getCategory() == null) )
+            if (category == null || (category.getId() == null && category.getCategory() == null))
                 throw new ProductNotFoundException(" Category field is required");
 
-            Optional<Category>  dbCat =
+            Optional<Category> dbCat =
                     category.getCategory() != null ?
                             categoryRepository.findByCategory(category.getCategory()) :
                             categoryRepository.findById(category.getId());
 
-            if(!dbCat.isEmpty() ) {
+            if (!dbCat.isEmpty()) {
                 product.setCategory(dbCat.get());
-            }
-            else{
+            } else {
                 // new category
                 category = categoryRepository.save(category);
                 product.setCategory(category);
             }
-        }
-        else{
-            throw  new ProductNotFoundException("");
+        } else {
+            throw new ProductNotFoundException("");
         }
         //Using product as param beacuse all  values should be updated
         product = productRepository.save(product);
@@ -93,11 +101,11 @@ public class SelfProductService implements  ProductService{
     @Override
     public Product updateProduct(Long productId, Product product) throws ProductNotFoundException {
 
-        Optional<Product>  dbProduct = productRepository.findById(productId);
+        Optional<Product> dbProduct = productRepository.findById(productId);
 
 
-        if(!dbProduct.isEmpty()) {
-            if(product.getTitle() != null )
+        if (!dbProduct.isEmpty()) {
+            if (product.getTitle() != null)
                 dbProduct.get().setTitle(product.getTitle());
             if (product.getPrice() != null) {
                 dbProduct.get().setPrice(product.getPrice());
@@ -105,16 +113,16 @@ public class SelfProductService implements  ProductService{
 
             Category category = product.getCategory();
 
-            if(category != null &&  (category.getCategory() == null && category.getId() == null) )
+            if (category != null && (category.getCategory() == null && category.getId() == null))
                 throw new ProductNotFoundException(" Category field is required");
 
-            if(category != null  ) {
-                Optional<Category>  dbCat =
+            if (category != null) {
+                Optional<Category> dbCat =
                         category.getCategory() != null ?
                                 categoryRepository.findByCategory(category.getCategory()) :
                                 categoryRepository.findById(category.getId());
 
-                if(dbCat.isEmpty() ) {
+                if (dbCat.isEmpty()) {
                     // new category
                     category = categoryRepository.save(category);
                     dbProduct.get().setCategory(category);
@@ -126,9 +134,8 @@ public class SelfProductService implements  ProductService{
             // you can only update category as a field of product
 
 
-        }
-        else{
-            throw  new ProductNotFoundException("");
+        } else {
+            throw new ProductNotFoundException("");
         }
         //Using dbProduct beacuse all other values should remain same
 
