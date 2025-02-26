@@ -8,6 +8,9 @@ import com.scaler.ProductService.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,6 +36,11 @@ public class SelfProductService implements ProductService {
     @Override
     public List<Product> getAllProducts() {
         return productRepository.findAll();
+    }
+
+    @Override
+    public Page<Product> getAllProducts(int pageNumber, int pageSize) {
+        return productRepository.findAll(PageRequest.of(pageNumber, pageSize));
     }
 
     @Override

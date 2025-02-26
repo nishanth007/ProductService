@@ -4,6 +4,7 @@ import com.scaler.ProductService.Exceptions.ProductNotFoundException;
 import com.scaler.ProductService.models.Product;
 import com.scaler.ProductService.services.ProductService;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
@@ -49,6 +50,12 @@ public class ProductController {
     public List<Product> getAllProducts() {
         return productService.getAllProducts();
     }
+
+    @GetMapping("/paged")
+    public Page<Product> getAllProducts(@RequestParam int pageNumber, @RequestParam int pageSize) {
+        return productService.getAllProducts(pageNumber, pageSize);
+    }
+
 
     //PATCH call - Partial Update
     @PatchMapping("/{productId}")

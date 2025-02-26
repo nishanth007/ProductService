@@ -16,32 +16,32 @@ import java.util.Optional;
 @SpringBootTest
 class ProductServiceApplicationTests {
 
-	@Autowired
-	ProductRepository productRepository ;
+    @Autowired
+    ProductRepository productRepository;
 
-	@Autowired
-	CategoryRepository categoryRepository ;
+    @Autowired
+    CategoryRepository categoryRepository;
 
-	@Test
-	void contextLoads() {
-	}
+    //@Test
+    void contextLoads() {
+    }
 
-	@Test
-	void check(){
-		Optional<Product> byId = productRepository.findById(5L);
-		System.out.println(byId.get().getTitle());
-		List<ProductsWithTitleAndPriceById> productsByTitlePriceById = productRepository.getProductsByTitlePriceById(5L);
-		productsByTitlePriceById.forEach(item -> System.out.println(item.getTitle()));
-	}
+    //@Test
+    void check() {
+        Optional<Product> byId = productRepository.findById(5L);
+        System.out.println(byId.get().getTitle());
+        List<ProductsWithTitleAndPriceById> productsByTitlePriceById = productRepository.getProductsByTitlePriceById(5L);
+        productsByTitlePriceById.forEach(item -> System.out.println(item.getTitle()));
+    }
 
-	//@Test
-	void checkcascadeDelete(){
-		categoryRepository.deleteById(1L);
-	}
+    //@Test
+    void checkcascadeDelete() {
+        categoryRepository.deleteById(1L);
+    }
 
-	@Test
-	void checkfetch(){
-		categoryRepository.findById(3L);
-	}
+    // @Test
+    void checkfetch() {
+        categoryRepository.findById(3L);
+    }
 
 }

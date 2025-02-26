@@ -8,12 +8,9 @@ import org.springframework.web.client.RestTemplate;
 public class RestTemplateConfig {
 
     @Bean
-    public RestTemplate getRestTemplate(){
+    public RestTemplate getRestTemplate() {
+        //For 3rd party api access
         return new RestTemplate();
     }
-//    @Bean
-//    public RestTemplate getRestTemplate2(){
-//        return new RestTemplate();
-//    }
 
 }
