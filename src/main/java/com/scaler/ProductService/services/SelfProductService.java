@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,9 +27,20 @@ public class SelfProductService implements ProductService {
     @Autowired
     CategoryRepository categoryRepository;
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
     @Override
     public Product getSingleProduct(Long productId) throws ProductNotFoundException {
+        Product p = (Product) redisTemplate.opsForHash().get("product", "PRODUCT_" + productId);
+
+        if (p != null) {
+            return p;
+        }
+
         Optional<Product> product = productRepository.findById(productId);
+
+        redisTemplate.opsForHash().put("product", "PRODUCT_" + productId, product.orElseThrow());
 
         return product.orElseThrow(() -> new ProductNotFoundException("Invalid product id"));
     }
